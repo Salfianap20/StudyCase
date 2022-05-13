@@ -8,7 +8,7 @@ namespace OrderService.GraphQL
 {
     public class Mutation
     {
-        [Authorize]
+        //[Authorize]
         public async Task<OrderData> AddOrderAsync(
             OrderData input,
             ClaimsPrincipal claimsPrincipal,
@@ -42,9 +42,6 @@ namespace OrderService.GraphQL
                     context.Orders.Add(order);
                     context.SaveChanges();
                     await transaction.CommitAsync();
-
-                    //input.Id = order.Id;
-                    //input.Code = order.Code;
                 }
                 else
                     throw new Exception("user was not found");
@@ -56,10 +53,9 @@ namespace OrderService.GraphQL
             return input;
         }
 
-        [Authorize]
+       // [Authorize]
         public async Task<TransactionStatus> SubmitOrderAsync(
            OrderData input,
-           //[Service] OrderQLContext context,
            [Service] IOptions<KafkaSettings> settings)
         {
             var key = "Submit-Order-" + DateTime.Now.ToString();
