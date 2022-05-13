@@ -8,7 +8,7 @@ namespace OrderService.GraphQL
 {
     public class Mutation
     {
-        /*[Authorize]
+        [Authorize]
         public async Task<OrderData> AddOrderAsync(
             OrderData input,
             ClaimsPrincipal claimsPrincipal,
@@ -43,8 +43,8 @@ namespace OrderService.GraphQL
                     context.SaveChanges();
                     await transaction.CommitAsync();
 
-                    input.Id = order.Id;
-                    input.Code = order.Code;
+                    //input.Id = order.Id;
+                    //input.Code = order.Code;
                 }
                 else
                     throw new Exception("user was not found");
@@ -54,29 +54,23 @@ namespace OrderService.GraphQL
                 transaction.Rollback();
             }
             return input;
-        }*/
-
-        public async Task<OrderOutput> SubmitOrderAsync(
-            OrderDataKafka input,
-            [Service] IOptions<KafkaSettings> settings)
-        {
-            var dts = DateTime.Now.ToString();
-            var key = "order-" + dts;
-            var val = JsonConvert.SerializeObject(input);
-
-            var result = await KafkaHelper.SendMessage(settings.Value, "studycase", key, val);
-
-            OrderOutput resp = new OrderOutput
-            {
-                TransactionDate = dts,
-                Message = "Order was submitted successfully"
-            };
-
-            if (!result)
-                resp.Message = "Failed to submit data";
-
-            return await Task.FromResult(resp);
         }
 
+        [Authorize]
+        public async Task<TransactionStatus> SubmitOrderAsync(
+           OrderData input,
+           //[Service] OrderQLContext context,
+           [Service] IOptions<KafkaSettings> settings)
+        {
+            var key = "Submit-Order-" + DateTime.Now.ToString();
+            var val = JsonConvert.SerializeObject(input);
+            var result = await KafkaHelper.SendMessage(settings.Value, "SubmitOrder", key, val);
+
+            var ret = new TransactionStatus(result, "Success to Submit Order");
+            if (!result)
+                ret = new TransactionStatus(result, "Failed to Submit Order");
+
+            return await Task.FromResult(ret);
+        }
     }
 }

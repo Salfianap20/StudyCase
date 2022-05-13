@@ -12,14 +12,16 @@ builder.Services.AddDbContext<studycaseContext>(options =>
      options.UseSqlServer(conString)
 );
 
+//kafka setting
+builder.Services.Configure<KafkaSettings>(builder.Configuration.GetSection("KafkaSettings"));
+
 // graphql
 builder.Services
     .AddGraphQLServer()
     .AddQueryType<Query>()
     .AddMutationType<Mutation>()
     .AddAuthorization();
-//kafka setting
-builder.Services.Configure<KafkaSettings>(builder.Configuration.GetSection("KafkaSettings"));
+
 
 builder.Services.AddControllers();
 // DI Dependency Injection

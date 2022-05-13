@@ -18,7 +18,6 @@ namespace OrderProcessor.Models
 
         public virtual DbSet<Order> Orders { get; set; } = null!;
         public virtual DbSet<OrderDetail> OrderDetails { get; set; } = null!;
-        public virtual DbSet<OrderKafka> OrderKafkas { get; set; } = null!;
         public virtual DbSet<Product> Products { get; set; } = null!;
         public virtual DbSet<Profile> Profiles { get; set; } = null!;
         public virtual DbSet<Role> Roles { get; set; } = null!;
@@ -55,30 +54,19 @@ namespace OrderProcessor.Models
             {
                 entity.ToTable("OrderDetail");
 
+                entity.Property(e => e.Created).HasColumnType("datetime");
+
                 entity.HasOne(d => d.Order)
-                    .WithMany(p => p.InverseOrder)
+                    .WithMany(p => p.OrderDetails)
                     .HasForeignKey(d => d.OrderId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_OrderDetail_OrderDetail");
+                    .HasConstraintName("FK_OrderDetail_Order");
 
                 entity.HasOne(d => d.Product)
                     .WithMany(p => p.OrderDetails)
                     .HasForeignKey(d => d.ProductId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_OrderDetail_Product");
-            });
-
-            modelBuilder.Entity<OrderKafka>(entity =>
-            {
-                entity.ToTable("OrderKafka");
-
-                entity.Property(e => e.Created).HasColumnType("datetime");
-
-                entity.Property(e => e.OrderCode)
-                    .HasMaxLength(50)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.OrderContent).HasColumnType("text");
             });
 
             modelBuilder.Entity<Product>(entity =>
