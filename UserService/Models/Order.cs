@@ -14,6 +14,7 @@ namespace UserService.Models
         public string Code { get; set; } = null!;
         public int? UserId { get; set; }
 
+        public virtual User? User { get; set; }
         public virtual ICollection<OrderDetail> OrderDetails { get; set; }
     }
 }

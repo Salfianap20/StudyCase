@@ -64,7 +64,7 @@ namespace OrderService.GraphQL
         {
             var key = "Submit-Order-" + DateTime.Now.ToString();
             var val = JsonConvert.SerializeObject(input);
-            var result = await KafkaHelper.SendMessage(settings.Value, "SubmitOrder", key, val);
+            var result = await KafkaHelper.SendMessage(settings.Value, "StudyCase", key, val);
 
             var ret = new TransactionStatus(result, "Success to Submit Order");
             if (!result)

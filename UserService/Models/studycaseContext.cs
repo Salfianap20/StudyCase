@@ -43,11 +43,18 @@ namespace UserService.Models
                     .HasMaxLength(50)
                     .IsUnicode(false)
                     .HasColumnName("code");
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.Orders)
+                    .HasForeignKey(d => d.UserId)
+                    .HasConstraintName("FK_Order_User");
             });
 
             modelBuilder.Entity<OrderDetail>(entity =>
             {
                 entity.ToTable("OrderDetail");
+
+                entity.Property(e => e.Created).HasColumnType("datetime");
 
                 entity.HasOne(d => d.Order)
                     .WithMany(p => p.OrderDetails)
